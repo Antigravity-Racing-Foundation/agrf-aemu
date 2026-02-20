@@ -1,0 +1,18 @@
+@import "tailwindcss";
+@theme static {
+    --color-agrf-strike: #713eff;
+    --color-agrf-statement: #8c66ff;
+    --color-agrf-whisper: #a79eff;
+    --color-nc-footer: #fcfcfc;
+    --color-nc-bg: #f6f6f6;
+    --color-nc-light-grey: #dedede;
+    --color-nc-grey: #646464;
+    --color-hd-blue: #8ac0ca;
+    --color-pulse-green: #219398;
+    --color-nc-fault: #ea0000;
+    --color-nc-bg-start: #64646433;
+    --color-nc-bg-end: #ffffff00;
+    --color-game-hd: #8ac0ca;
+    --color-game-pulse: #219398;
+    --color-game-ae: #8CD2FF;
+}
