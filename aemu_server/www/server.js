@@ -92,7 +92,7 @@ function fetch_data(){
 
 setInterval(fetch_data, 2000);
 
-function process_data(res){
+function process_data(){
 	let processed_data = {
 		games:[]
 	};
@@ -112,8 +112,16 @@ function process_data(res){
 			name:game["@_name"],
 			usercount:game["@_usercount"],
 			groups:[],
+			game_ids:[],
 		};
 		processed_data.games.push(game_entry)
+
+		let game_ids_str = game["@_game_ids"];
+		if (game_ids_str != undefined){
+			for(const id of game_ids_str.split(",")){
+				game_entry.game_ids.push(id);
+			}
+		}
 
 		let groups = game["group"];
 		if (groups == undefined){
@@ -164,51 +172,38 @@ function process_data(res){
 
 setInterval(process_data, 5000);
 
-function draw_page(res){
-}
-
-const resources = [
-	{
-		path:"/favicon.svg",
-		type:"image/svg+xml"
+const resources = {
+	"/favicon.svg":{
+		type:"image/svg+xml",
 	},
-	{
-		path:"/favicon.png",
+	"/favicon.png":{
 		type:"image/png"
 	},
-	{
-		path:"/favicon.ico",
+	"/favicon.ico":{
 		type:"image/ico"
 	},
-	{
-		path:"/images/text_ornament_tiny_square.svg",
+	"/images/text_ornament_tiny_square.svg":{
 		type:"image/svg+xml"
 	},
-	{
-		path:"/images/text_ornament_tiny_arrow.svg",
+	"/images/text_ornament_tiny_arrow.svg":{
 		type:"image/svg+xml"
 	},
-	{
-		path:"/images/corner.svg",
+	"/images/corner.svg":{
 		type:"image/svg+xml"
 	},
-	{
-		path:"/images/embed.webp",
+	"/images/embed.webp":{
 		type:"image/webp"
 	},
-	{
-		path:"/fonts/HelveticaNowMicro_Bold.otf",
+	"/fonts/HelveticaNowMicro_Bold.otf":{
 		type:"font/opentype"
 	},
-	{
-		path:"/status.html",
+	"/status.html":{
 		type:"text/html; charset=utf-8"
 	},
-	{
-		path:"/css/output.css",
+	"/css/output.css":{
 		type:"text/css; charset=utf-8"
-	},
-]
+	}
+};
 
 function request_handler(req, res){
 	let url = req.url;
@@ -222,25 +217,19 @@ function request_handler(req, res){
 			break;
 		}
 		default:{
-			let resource_found = false;
-			for(const resource_entry of resources){
-				if (url == resource_entry.path){
-					fs.readFile("." + url, null, (err, data) => {
-						if (err){
-							console.log(`error ${err} while reading ${url}`)
-							res.writeHead(500);
-							res.end(`failed reading ${url}`);
-						}else{
-							res.writeHead(200, {"Content-Type": resource_entry.type});
-							res.end(data);
-						}
-					})
-					resource_found = true;
-					break;
-				}
-			}
-
-			if (!resource_found){
+			const resource_entry = resources[url];
+			if (resource_entry != undefined){
+				fs.readFile("." + url, null, (err, data) => {
+					if (err){
+						console.log(`error ${err} while reading ${url}`)
+						res.writeHead(500);
+						res.end(`failed reading ${url}`);
+					}else{
+						res.writeHead(200, {"Content-Type": resource_entry.type});
+						res.end(data);
+					}
+				});
+			}else{
 				res.writeHead(400);
 				res.end(`${url} not found`);
 			}
